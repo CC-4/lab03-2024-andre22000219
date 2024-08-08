@@ -1,4 +1,5 @@
-/*
+
+    /*
     Laboratorio No. 3 - Recursive Descent Parsing
     CC4 - Compiladores
 
@@ -134,8 +135,51 @@ public class Parser {
     }
 
     private boolean E() {
-        return false;
+        if (!T()) return false;
+        while (this.next < this.tokens.size() && (this.tokens.get(this.next).getId() == Token.PLUS || this.tokens.get(this.next).getId() == Token.MINUS)) {
+            int op = this.tokens.get(this.next).getId();
+            this.next++;
+            if (!T()) return false;
+            // Aquí se debe realizar la operación aritmética basada en el operador
+        }
+        return true;
     }
 
-    /* TODO: sus otras funciones aqui */
+    private boolean T() {
+        if (!F()) return false;
+        while (this.next < this.tokens.size() && (this.tokens.get(this.next).getId() == Token.MULT || this.tokens.get(this.next).getId() == Token.DIV || this.tokens.get(this.next).getId() == Token.MOD)) {
+            int op = this.tokens.get(this.next).getId();
+            this.next++;
+            if (!F()) return false;
+            // Aquí se debe realizar la operación aritmética basada en el operador
+        }
+        return true;
+    }
+
+    private boolean F() {
+        if (!G()) return false;
+        while (this.next < this.tokens.size() && this.tokens.get(this.next).getId() == Token.EXP) {
+            this.next++;
+            if (!G()) return false;
+            // Aquí se debe realizar la operación aritmética basada en el operador
+        }
+        return true;
+    }
+
+    private boolean G() {
+        if (term(Token.UNARY)) {
+            return G();
+        } else {
+            return P();
+        }
+    }
+
+    private boolean P() {
+        if (term(Token.LPAREN)) {
+            if (!E()) return false;
+            return term(Token.RPAREN);
+        } else {
+            return term(Token.NUMBER);
+        }
+    }
 }
